@@ -1,9 +1,13 @@
 import os
+from dotenv import load_dotenv
 
 from pydantic.v1 import BaseSettings
 from pydantic import computed_field
 
 from functools import cached_property
+
+
+load_dotenv(".env")
 
 
 class Settings(BaseSettings):
@@ -18,13 +22,10 @@ class Settings(BaseSettings):
         case_sensitive = True
         env_file = ".env"
 
-    @computed_field
-    @cached_property
-    def DATABASE_URL(self) -> str:
-        return str(
-            f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}",
-            f"@db:{self.DB_PORT}/{self.DB_NAME}"
-        )
-
 
 settings = Settings()
+
+DATABASE_URL = "".join([
+    f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}",
+    f"@db:{settings.DB_PORT}/{settings.DB_NAME}"
+])

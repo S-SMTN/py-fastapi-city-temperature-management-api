@@ -3,10 +3,7 @@ from sqlalchemy.orm import relationship
 
 from project_settings.database import Base
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from City_app.models import DBCity
+from City_app.models import DBCity
 
 
 class DBTemperature(Base):
