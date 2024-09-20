@@ -1,4 +1,5 @@
 import asyncio
+import time
 from logging.config import fileConfig
 
 from sqlalchemy import pool
@@ -79,10 +80,19 @@ async def run_async_migrations() -> None:
         poolclass=pool.NullPool,
     )
 
-    async with connectable.connect() as connection:
-        await connection.run_sync(do_run_migrations)
+    connection_limit = 60
+    sleep_time = 1
 
-    await connectable.dispose()
+    while connection_limit:
+        try:
+            async with connectable.connect() as connection:
+                await connection.run_sync(do_run_migrations)
+            await connectable.dispose()
+            connection_limit = 0
+        except Exception as e:
+            print(f"[ERROR] FAILED Alembic connection to DB. {type(e)}, {e}")
+            time.sleep(sleep_time)
+            connection_limit -= 1
 
 
 def run_migrations_online() -> None:

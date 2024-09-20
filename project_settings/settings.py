@@ -2,9 +2,6 @@ import os
 from dotenv import load_dotenv
 
 from pydantic.v1 import BaseSettings
-from pydantic import computed_field
-
-from functools import cached_property
 
 
 load_dotenv(".env")
