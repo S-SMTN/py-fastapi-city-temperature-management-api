@@ -1,7 +1,6 @@
-from typing import List, Optional
+from typing import List
 
-from pydantic import BaseModel, field_validator
-from City_app.schema_validators.validators import StrLengthValidator
+from pydantic import BaseModel, Field
 
 from typing import TYPE_CHECKING
 
@@ -10,23 +9,16 @@ if TYPE_CHECKING:
 
 
 class CityBase(BaseModel):
-    name: str
+    name: str = Field(max_length=176)
     additional_info: str
-
-    @classmethod
-    @field_validator("name")
-    def name_length(cls, name: str) -> str:
-        StrLengthValidator.validate("City name", name, 176)
-
-        return name
 
 
 class CityCreate(CityBase):
-    temperatures: Optional[List[TemperatureCreate]] = []
+    temperatures: List[TemperatureCreate] = []
 
 
 class City(CityBase):
-    temperatures: Optional[List[Temperature]] = []
+    temperatures: List[Temperature] = []
 
     class Config:
         orm_mode = True
