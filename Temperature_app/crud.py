@@ -36,3 +36,19 @@ async def get_temperature_by_city_id(
     temperatures_getter = TemperaturesGetter(db=db)
     temperatures_getter.set_filter_by_city_id(city_id)
     return await temperatures_getter.get_result()
+
+
+async def create_temperature(
+        db: AsyncSession,
+        temperature_data: dict
+) -> DBTemperature:
+    temperature = DBTemperature(
+        city_id=temperature_data.get("city_id"),
+        temperature=temperature_data.get("temperature")
+    )
+    db.add(temperature)
+
+    await db.commit()
+    await db.refresh(temperature)
+
+    return temperature
