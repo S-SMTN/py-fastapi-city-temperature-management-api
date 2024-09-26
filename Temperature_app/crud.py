@@ -16,6 +16,9 @@ class TemperaturesGetter:
         .order_by(DBTemperature.date_time)
     )
 
+    def set_filter_by_city_id(self, city_id: int) -> None:
+        self.stmt = self.stmt.where(DBTemperature.city_id == city_id)
+
     async def get_result(self) -> List[DBTemperature]:
         temperatures = await self.db.scalars(self.stmt)
         return list(temperatures)
@@ -31,8 +34,5 @@ async def get_temperature_by_city_id(
     city_id: int
 ) -> List[DBTemperature]:
     temperatures_getter = TemperaturesGetter(db=db)
-    temperatures_getter.stmt = (
-        temperatures_getter.stmt
-        .where(DBTemperature.city_id == city_id)
-    )
+    temperatures_getter.set_filter_by_city_id(city_id)
     return await temperatures_getter.get_result()
