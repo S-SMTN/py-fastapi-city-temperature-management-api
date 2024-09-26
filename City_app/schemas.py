@@ -1,11 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from Temperature_app.schemas import TemperatureCreate, Temperature
+from Temperature_app.schemas import Temperature
 
 
 class CityBase(BaseModel):
@@ -14,11 +11,12 @@ class CityBase(BaseModel):
 
 
 class CityCreate(CityBase):
-    temperatures: List[TemperatureCreate] = []
+    pass
 
 
 class City(CityBase):
-    temperatures: List[Temperature] = []
+    id: int
+    temperatures: Optional[List[Temperature]] = []
 
     class Config:
         orm_mode = True
