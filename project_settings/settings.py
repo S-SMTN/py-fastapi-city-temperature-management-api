@@ -1,8 +1,11 @@
+import asyncio
 import os
 from dotenv import load_dotenv
 
 from pydantic.v1 import BaseSettings
-
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 
 load_dotenv(".env")
 
@@ -26,3 +29,15 @@ DATABASE_URL = "".join([
     f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}",
     f"@db:{settings.DB_PORT}/{settings.DB_NAME}"
 ])
+
+
+async def set_timezone():
+    engine = create_async_engine(DATABASE_URL, echo=True)
+    sessionlocal = sessionmaker(bind=engine, class_=AsyncSession)
+    async with sessionlocal() as session:
+        await session.execute(text(f"ALTER DATABASE {os.getenv('DB_NAME')} SET timezone TO 'Europe/Kiev';"))
+        await session.commit()
+
+
+if __name__ == '__main__':
+    asyncio.run(set_timezone())
