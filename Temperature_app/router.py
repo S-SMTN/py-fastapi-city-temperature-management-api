@@ -17,3 +17,15 @@ async def get_temperatures(
     db: AsyncSession = Depends(get_db)
 ) -> List[schemas.Temperature]:
     return await crud.get_all_temperatures(db=db)
+
+
+@temperature_router.get(
+    path="/temperatures/{city_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=List[schemas.Temperature]
+)
+async def get_temperature_by_city_id(
+        city_id: int,
+        db: AsyncSession = Depends(get_db)
+) -> List[schemas.Temperature]:
+    return await crud.get_temperature_by_city_id(db=db, city_id=city_id)
