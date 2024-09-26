@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from typing import List
 
+from Temperature_app.api_parser.parcer import get_temperature
 from project_settings.custom_exceptions.http_exceptions import CityNotFoundException
 from project_settings.dependecies import get_db
 from . import schemas, crud
@@ -19,9 +20,18 @@ async def create_city(
     city_data: schemas.CityCreate,
     db: AsyncSession = Depends(get_db)
 ) -> schemas.City:
-    return await crud.create_city(
-        db=db,
-        city_data=city_data
+    city_data.name = city_data.name.capitalize()
+    if await get_temperature(city_name=city_data.name):
+        return await crud.create_city(
+            db=db,
+            city_data=city_data
+        )
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=("".join([
+            f"City with name {city_data.name} does not exist. ",
+            "Make sure you've entered the correct name"
+        ]))
     )
 
 
@@ -43,7 +53,7 @@ async def retrieve_city(
     city_id: int,
     db: AsyncSession = Depends(get_db)
 ) -> schemas.City:
-    city = await crud.get_city(db=db, city_id=city_id)
+    city = await crud.get_city_with_temperatures(db=db, city_id=city_id)
 
     if city is None:
         raise CityNotFoundException(city_id)
