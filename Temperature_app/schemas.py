@@ -1,9 +1,9 @@
-from pydantic import BaseModel, PastDate
+from pydantic import BaseModel, PastDatetime
 
 
 class TemperatureBase(BaseModel):
     city_id: int
-    date_time: PastDate
+    date_time: PastDatetime
     temperature: float
 
 
@@ -15,4 +15,4 @@ class Temperature(TemperatureBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
