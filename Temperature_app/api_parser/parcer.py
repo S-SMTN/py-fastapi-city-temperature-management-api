@@ -23,7 +23,9 @@ async def get_temperature(
     response = await client.get(get_api_url(city_name))
 
     if response.status_code != 404:
-        temperature = round(response.json().get("main").get("temp") - 273.15, 2)
+        temperature = round(
+            response.json().get("main").get("temp") - 273.15, 2
+        )
         return {city_name: temperature}
     return None
 
