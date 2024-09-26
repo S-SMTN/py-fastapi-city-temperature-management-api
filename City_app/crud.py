@@ -8,22 +8,20 @@ from City_app.models import DBCity
 from City_app.schemas import CityCreate
 
 
+STMT = (
+    select(DBCity)
+    .options(selectinload(DBCity.temperatures))
+    .order_by(DBCity.name)
+)
+
+
 async def get_all_cities_with_temperatures(db: AsyncSession) -> List[DBCity]:
-    stmt = (
-        select(DBCity)
-        .options(selectinload(DBCity.temperatures))
-        .order_by(DBCity.name)
-    )
-    cities = await db.scalars(stmt)
+    cities = await db.scalars(STMT)
     return list(cities)
 
 
 async def get_city(db: AsyncSession, city_id: int) -> DBCity | None:
-    stmt = (
-        select(DBCity)
-        .options(selectinload(DBCity.temperatures))
-        .where(DBCity.id == city_id)
-    )
+    stmt = STMT.where(DBCity.id == city_id)
     city = await db.scalar(stmt)
     return city
 
