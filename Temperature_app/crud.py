@@ -1,7 +1,7 @@
 from typing import List
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.orm import selectinload
 
 from Temperature_app.models import DBTemperature
@@ -13,7 +13,7 @@ class TemperaturesGetter:
         self.stmt = (
         select(DBTemperature)
         .options(selectinload(DBTemperature.city))
-        .order_by(DBTemperature.date_time)
+        .order_by(desc(DBTemperature.date_time))
     )
 
     def set_filter_by_city_id(self, city_id: int) -> None:
